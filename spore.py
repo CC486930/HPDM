@@ -4,7 +4,7 @@ Created on Tue Aug 27 13:39:17 2019
 
 @author: SCSC
 """
-#训练
+#train
 import torch, time
 from random import shuffle as sf
 from torch import nn
@@ -17,26 +17,24 @@ import resnet18
 from utils import inference, train, group_argtopk, writecsv, group_max, calc_err
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-'''
-经测试，batchsize的大小对inference时间不会造成影响，所以选用128
-'''
+
 
 def main():
     best_acc = 0
-    pk = 1 #选取的正例数目
-    nk = 3 #选取的反例数目
-    n_epoch = 50 #迭代次数
-    test_every = 1 #训练n次测试一次
-    # 定义网络
+    pk = 1 # Number of positive instances selected
+    nk = 3 # Number of negatives instances selected
+    n_epoch = 50 # Number of iterations
+    test_every = 1 # Train n times test once
+    # Defining the Network
     model = resnet18.resnet18(False)
-    model.load_state_dict(torch.load('resnet18-5c106cde.pth'))#用来分类的权重文件
+    model.load_state_dict(torch.load('resnet18-5c106cde.pth'))# Weight files used for categorization
     model.fc = nn.Linear(model.fc.in_features, 2)
     #model.cuda()
     #criterion = nn.CrossEntropyLoss().cuda()
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=1e-5, weight_decay=1e-5)
     cudnn.benchmark = True
-    # 定义数据集
+    # Defining the data set
     normalize = transforms.Normalize(mean=[0.5,0.5,0.5],std=[0.1,0.1,0.1])
     trans = transforms.Compose([transforms.ToTensor(), normalize])
     train_dset = XDataset('train-50.lib',transform=trans)
@@ -49,7 +47,7 @@ def main():
         test_dset,
         batch_size=128,shuffle=False,
         pin_memory=False)
-    # # 定义log文件
+    
     # fconv = open('Training_50.csv', 'w')
     # fconv.write('time,epoch,loss,error\n')
     # moment = time.time()
@@ -61,41 +59,41 @@ def main():
     # moment = time.time()
     # fconv.write('%d,0,0,0\n'%moment)
     # fconv.close()
-    # 开始迭代
+    # Start Iteration
     for epoch in range(n_epoch):
-        ## ①全部检测
+        ## ①All Tests
         train_dset.setmode(1)
         _, probs = inference(epoch, train_loader, model, criterion)
 #        torch.save(probs,'probs/train-%d.pth'%(epoch+1))
-        probs1 = probs[:train_dset.plen] #plen是指probs中来自正例的tiles(probs)数目
+        probs1 = probs[:train_dset.plen] #plen is the number of tiles(probs) from positive instances in probs
         probs0 = probs[train_dset.plen:]
 
         print(train_dset.plen)
-        ## ②选出前pk=1个
+        ## ②Elected former pk=1
         topk1 = np.array(group_argtopk(np.array(train_dset.slideIDX[:train_dset.plen]), probs1, pk))
-        ## ②选出前nk=5个，并偏移plen个位置
+        ## ②Pick the first nk=5 and offset plen positions
         topk0 = np.array(group_argtopk(np.array(train_dset.slideIDX[train_dset.plen:]), probs0, nk))+train_dset.plen
         topk = np.append(topk1, topk0).tolist()
 #        torch.save(topk,'topk/train-%d.pth'%(epoch+1))
 #        maxs = group_max(np.array(train_dset.slideIDX), probs, len(train_dset.targets))
 #        torch.save(maxs, 'maxs/%d.pth'%(epoch+1))
         sf(topk)
-        ## ③准备训练集
+        ## ③Preparing the training set
         train_dset.maketraindata(topk)
         train_dset.setmode(2)
-        ## ④训练并保存结果
+        ## ④Train and save the results
         loss, err = train(train_loader, model, criterion, optimizer)
         moment = time.time()
         writecsv([moment, epoch+1, loss, err], 'Training.csv')
         print('Training epoch=%d, loss=%.5f, error=%.5f'%(epoch+1, loss, err))
-        ## ⑤验证
+        ## ⑤validate
         if (epoch+1) % test_every == 0:
             test_dset.setmode(1)
             loss, probs = inference(epoch, test_loader, model, criterion)
 #            torch.save(probs,'probs/test-%d.pth'%(epoch+1))
 #            topk = group_argtopk(np.array(test_dset.slideIDX), probs, pk)
 #            torch.save(topk, 'topk/test-%d.pth'%(epoch+1))
-            maxs = group_max(np.array(test_dset.slideIDX), probs, len(test_dset.targets))  #返回每个切片的最大概率
+            maxs = group_max(np.array(test_dset.slideIDX), probs, len(test_dset.targets))  #Returns the maximum probability of each slice
 #            torch.save(maxs, 'maxs/test-%d.pth'%(epoch+1))
             pred = [1 if x >= 0.5 else 0 for x in maxs]
             err = calc_err(pred, test_dset.targets)
