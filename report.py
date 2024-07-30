@@ -12,8 +12,8 @@ from sklearn.metrics import auc
 
 probs = torch.load('probs-50.pth')
 maxs = []
-for i in range(15): # 测试集的数量（正例测试集和负例测试集）
-    maxs.append(max(probs[i*1849:(i+1)*1849]))   # 1849的计算公式：{[(图片尺寸-tile尺寸)/步长] + 1}的平方 ; 步长 = tile尺寸/2 ;
+for i in range(15): # Number of test sets (positive and negative example test sets)
+    maxs.append(max(probs[i*1849:(i+1)*1849]))   # Formula for 1849: {[(image size - tile size)/step size] + 1} squared ; step size = tile size/2 ;
 targets = torch.load('test-50.lib')['targets']
 #print(maxs)
 preds = [1 if i>0.5 else 0 for i in maxs]
