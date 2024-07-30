@@ -1,4 +1,7 @@
 # High-precision detection modeling reveals fundamental structural scales of amorphous materials
+### summarize
+Here we give the representative code for the High-precision detection model (HPDM) and the representative dataset generated for the results in the main text (in dataset). The specific execution process is as follows:
+
 * convert.py<br>
   Convert image resolution.<br> 
 * preprocess.py<br> 
