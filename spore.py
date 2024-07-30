@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Aug 27 13:39:17 2019
 
-@author: SCSC
-"""
 #train
 import torch, time
 from random import shuffle as sf
