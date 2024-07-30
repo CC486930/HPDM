@@ -4,7 +4,6 @@ import os
 import string
 from matplotlib import pyplot as plt
 
-#转换图像数据大小
 
 path=''
 filelist=os.listdir(path)
