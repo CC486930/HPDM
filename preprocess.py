@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-生成train.lib和test.lib
-要求必须保证正例聚集在前，反例聚集在后
-"""
+Generate train.lib and test.lib
 
-#数据预处理，处理成标准lib
 
 import torch, os, time
 import numpy as np
@@ -13,7 +10,7 @@ from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 moment = time.time()
-box = 50 #切割小块的边长
+box = 50 #Cutting the side length of a small piece
 positives = os.listdir('positives')
 negatives = os.listdir('negatives')
 positives_t = os.listdir('positives_t')
