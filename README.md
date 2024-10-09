@@ -33,24 +33,24 @@ and then run the scripts in sequence.
 ```
 python convert.py
 ```
-  Convert image resolution. 
+  Convert image resolution.  
 ```
-preprocess.py
+python preprocess.py
 ```
-  Data preprocessing, splitting the amorphous image into blocks of “box” parameter size and processing the data into standard lib data.<br>
+  Data preprocessing, splitting the amorphous image into blocks of “box” parameter size and processing the data into standard lib data.<br>  
 ```
-spore.py
+python spore.py
 ```
-  Train, after testing, the size of the batchsize does not affect the inference time, so 128 is chosen.<br>
+  Train, after training, you will get the best model "checkpoint_50_best.pth". (after testing, the size of the batchsize does not affect the inference time, so 128 is chosen.)  
 ```
-probmap.py
+python probmap.py
 ```
-  Use the trained model to return the probability matrix of the whole image.<br>
+  Use the trained model to return the probability matrix of the whole image.<br>  
 ```
-heatmap_ori.py
+python heatmap_ori.py
 ```
-  Generate structured segmented images of test data.<br>
+  Generate structured segmented images of test data.<br>  
 ```
-report.py
+python report.py
 ```
   Generate categorized information about the test data.<br>
