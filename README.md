@@ -8,7 +8,7 @@ Here we give the representative code for the High-precision detection model (HPD
  * Torch = 1.11
  * Torchvision = 0.4.1
  * Numpy = 1.x
- * 
+   
 ## Usage
 First, collect training and validation data and deploy it like this(for binary classification),
 ```
